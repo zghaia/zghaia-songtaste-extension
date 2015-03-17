@@ -10,19 +10,51 @@
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details 
-                      <./GNU GENERAL PUBLIC LICENSE>
+                  <http://www.gnu.org/licenses/gpl.html>
 -->
 <html>
-<script src="./autojump.js"></script>
+
+<script src="./scripts/tips.js"></script>
+<script src="./scripts/saveas.js"></script>
+<script src="./scripts/download.js"></script>
+<script src="./scripts/filter.js"></script>
+
 <script type="text/javascript">
-	
-chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
-	 	console.log(tabId+''+info.url+' '+tab.url+' '+tab.id);
-	 	console.log('url.indexOf(urlFrom) '+ tab.url.indexOf(localStorage["from"]));
-	 	if(tab.url.indexOf(localStorage["from"])>-1)
-	  {
-			autoJump(tab.id,tab.url);
+
+chrome.browserAction.onClicked.addListener(function(tab) {
+		var URLlink=tab.url;
+		if(URLlink.indexOf('songtaste.com/song/')>-1)
+		{
+				URLlink="http://huodong.duomi.com/songtaste/?songid="+URLlink.match(/\d{1,}/);
+				//eval("link= URLlink;");
+				//chrome.tabs.executeScript(tab.id, {file: "./scripts/filter.js"});
+				URLlink=filter(URLlink);
+				console.log(' URLlink ='+ URLlink);
 		}
+		else
+		{
+		         filter(URLlink);
+				 //chrome.tabs.executeScript(tab.id, {file: "./scripts/filter.js"});
+				 console.log('URLlink ='+ URLlink);
+		}
+	
+});
+
+chrome.extension.onRequest.addListener(function(request) {
+		//console.log('request.type: '+ request.type);
+		console.log('request.URLlink: '+ request.URLlink);
+		//console.log('request.site: '+ request.site);
+		
+		var IsNull;
+		if (request.URLlink==null){
+				  IsNull=false; 		
+		}else{
+			    IsNull=true;
+			    for (var i=0; i<request.URLlink.length; i++){
+					download(request.URLlink[i]);
+				}
+		}
+		nitiftips(IsNull);
 });
 
 </script>
